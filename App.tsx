@@ -6,7 +6,7 @@ import { MAX_VOTES, LOCAL_STORAGE_KEY } from './constants';
 import { RestaurantCard } from './components/RestaurantCard';
 import { StickyFooter } from './components/StickyFooter';
 import { Leaderboard } from './components/Leaderboard';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Vote } from 'lucide-react';
 
 const App: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -109,20 +109,28 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 pb-32">
       {/* Modern Header Section */}
-      <header className="relative bg-white pt-16 pb-16 px-4 border-b border-slate-200 overflow-hidden">
+      <header className="relative bg-white pt-12 pb-12 px-4 border-b border-slate-200 overflow-hidden transition-all duration-500">
         {/* Background Decorative Gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-100 via-slate-50 to-slate-50 opacity-70"></div>
         
         <div className="relative max-w-6xl mx-auto text-center z-10">
-          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 mb-4 tracking-tight drop-shadow-sm">
-            Lunch Vote
+          <div className="inline-flex items-center justify-center p-3 bg-white rounded-full shadow-sm mb-4">
+             <Vote className="text-primary mr-2" /> 
+             <span className="text-slate-600 font-medium text-sm">Team Lunch Vote</span>
+          </div>
+
+          <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 mb-4 tracking-tight drop-shadow-sm">
+            {hasVotedToday ? 'Ergebnisse Live' : 'Wo essen wir heute?'}
           </h1>
-          <p className="text-slate-500 text-lg md:text-xl font-medium">
-            Entscheidung für den <span className="text-slate-800 font-bold">{getTodayDate()}</span>
+          <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+            {hasVotedToday 
+              ? `Hier ist der aktuelle Stand für den ${getTodayDate()}.` 
+              : `Verteile deine Stimmen für den ${getTodayDate()}. Die Ergebnisse siehst du nach der Abgabe.`
+            }
           </p>
 
-          {/* Top 3 Leaderboard */}
-          <Leaderboard restaurants={restaurants} />
+          {/* Top 3 Leaderboard - NUR SICHTBAR WENN BEREITS ABGESTIMMT */}
+          {hasVotedToday && <Leaderboard restaurants={restaurants} />}
         </div>
       </header>
 
@@ -130,7 +138,9 @@ const App: React.FC = () => {
       <main className="max-w-6xl mx-auto px-4 mt-12">
         <div className="flex items-center gap-4 mb-6">
             <div className="h-px bg-slate-200 flex-1"></div>
-            <span className="text-slate-400 text-sm font-semibold uppercase tracking-wider">Alle Lokale</span>
+            <span className="text-slate-400 text-sm font-semibold uppercase tracking-wider">
+              {hasVotedToday ? 'Alle Ergebnisse' : 'Zur Auswahl'}
+            </span>
             <div className="h-px bg-slate-200 flex-1"></div>
         </div>
 
