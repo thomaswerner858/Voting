@@ -1,9 +1,11 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { fetchRestaurantsAndVotes, getTodayDate, submitVotesToAirtable } from './services/airtableService';
 import { Restaurant, VoteSelection } from './types';
 import { MAX_VOTES, LOCAL_STORAGE_KEY } from './constants';
 import { RestaurantCard } from './components/RestaurantCard';
 import { StickyFooter } from './components/StickyFooter';
+import { Leaderboard } from './components/Leaderboard';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -41,11 +43,6 @@ const App: React.FC = () => {
   const totalVotesUsed = useMemo(() => {
     return Object.values(userVotes).reduce((sum: number, count: number) => sum + count, 0);
   }, [userVotes]);
-
-  const maxVotesForRest = (id: string) => {
-    const current = userVotes[id] || 0;
-    return (MAX_VOTES - totalVotesUsed) + current; // Should technically just check remaining
-  };
 
   // Handlers
   const handleIncrement = (id: string) => {
@@ -111,20 +108,32 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-32">
-      {/* Header */}
-      <header className="bg-gradient-to-b from-purple-100 to-slate-50 pt-12 pb-8 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-primary mb-3">
-            Wo gehen wir heute essen?
+      {/* Modern Header Section */}
+      <header className="relative bg-white pt-16 pb-16 px-4 border-b border-slate-200 overflow-hidden">
+        {/* Background Decorative Gradient */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-100 via-slate-50 to-slate-50 opacity-70"></div>
+        
+        <div className="relative max-w-6xl mx-auto text-center z-10">
+          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 mb-4 tracking-tight drop-shadow-sm">
+            Lunch Vote
           </h1>
-          <p className="text-slate-500 text-lg">
-            Abstimmung für den <span className="font-semibold text-slate-700">{getTodayDate()}</span>
+          <p className="text-slate-500 text-lg md:text-xl font-medium">
+            Entscheidung für den <span className="text-slate-800 font-bold">{getTodayDate()}</span>
           </p>
+
+          {/* Top 3 Leaderboard */}
+          <Leaderboard restaurants={restaurants} />
         </div>
       </header>
 
       {/* Grid */}
-      <main className="max-w-6xl mx-auto px-4">
+      <main className="max-w-6xl mx-auto px-4 mt-12">
+        <div className="flex items-center gap-4 mb-6">
+            <div className="h-px bg-slate-200 flex-1"></div>
+            <span className="text-slate-400 text-sm font-semibold uppercase tracking-wider">Alle Lokale</span>
+            <div className="h-px bg-slate-200 flex-1"></div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {restaurants.map((restaurant) => (
             <RestaurantCard 
