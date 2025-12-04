@@ -1,4 +1,5 @@
 {
   "name": "Team Lunch Vote",
-  "description": "A modern voting app for team lunches using Airtable as a backend."
+  "description": "A modern voting app for team lunches using Airtable as a backend.",
+  "requestFramePermissions": []
 }
